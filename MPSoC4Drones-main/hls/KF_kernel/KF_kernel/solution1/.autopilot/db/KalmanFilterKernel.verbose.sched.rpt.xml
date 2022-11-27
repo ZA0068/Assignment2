@@ -1,0 +1,58 @@
+<profile>
+
+<section name = "Vitis HLS Report for 'KalmanFilterKernel'" level="0">
+<item name = "Date">Sat Nov 26 17:57:14 2022
+</item>
+<item name = "Version">2020.2 (Build 3064766 on Wed Nov 18 09:12:47 MST 2020)</item>
+<item name = "Project">KF_kernel</item>
+<item name = "Solution">solution1 (Vivado IP Flow Target)</item>
+<item name = "Product family">zynquplus</item>
+<item name = "Target device">xczu3eg-sbva484-1-i</item>
+</section>
+
+<section name = "Performance Estimates" level="0">
+<item name = "Timing">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="4">Clock, Target, Estimated, Uncertainty</keys>
+<column name="ap_clk">10.00 ns, 6.808 ns, 2.70 ns</column>
+</table>
+</item>
+</section>
+</item>
+<item name = "Latency">
+<section name = "" level="1">
+<item name = "Summary"><table name="" hasTotal="0">
+<keys size="8">, min, max, min, max, min, max, Type</keys>
+<column name="">2972739, 3245427, 29.727 ms, 32.454 ms, 2972740, 3245428, none</column>
+</table>
+</item>
+<item name = "Detail">
+<section name = "" level="1">
+<item name = "Instance"><table name="" hasTotal="0">
+<keys size="9">Instance, Module, min, max, min, max, min, max, Type</keys>
+</table>
+</item>
+<item name = "Loop"><table name="" hasTotal="0">
+<keys size="8">Loop Name, min, max, Latency, achieved, target, Count, Pipelined</keys>
+<column name="- VITIS_LOOP_45_1">1800, 1800, 2, 1, 1, 1800, yes</column>
+<column name="- Loop 2">35, 35, 1, 1, 1, 35, yes</column>
+<column name="- VITIS_LOOP_76_2">6, 6, 2, 1, 1, 6, yes</column>
+<column name="- VITIS_LOOP_79_3">2969070, 3241758, 9930 ~ 10842, -, -, 299, no</column>
+<column name=" + VITIS_LOOP_41_1">54, 54, 9, -, -, 6, no</column>
+<column name="  ++ VITIS_LOOP_44_2">7, 7, 7, -, -, 1, no</column>
+<column name=" + VITIS_LOOP_41_1">300, 300, 50, -, -, 6, no</column>
+<column name="  ++ VITIS_LOOP_44_2">48, 48, 8, -, -, 6, no</column>
+<column name=" + VITIS_LOOP_41_1">69, 69, 23, -, -, 3, no</column>
+<column name="  ++ VITIS_LOOP_44_2">21, 21, 7, -, -, 3, no</column>
+<column name=" + VITIS_LOOP_41_1">54, 54, 9, -, -, 6, no</column>
+<column name="  ++ VITIS_LOOP_44_2">7, 7, 7, -, -, 1, no</column>
+<column name="- VITIS_LOOP_153_13">1800, 1800, 2, 1, 1, 1800, yes</column>
+</table>
+</item>
+</section>
+</item>
+</section>
+</item>
+</section>
+</profile>
