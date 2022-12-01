@@ -1,0 +1,7 @@
+restart
+add_force {/counter/clk} -radix hex {0 0ns} {1 500ps} -repeat_every 1000ps
+add_force {/counter/rst} -radix hex {1 0ns}
+add_force {/counter/divider} -radix hex {2 0ns}
+run 1 ns
+add_force {/counter/rst} -radix hex {0 0ns}
+run 10 ns
