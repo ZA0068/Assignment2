@@ -1,8 +1,35 @@
 #include "kf_node.h"
+#include "xbram.h"
+#include "xkalmanfilterkernel.h"
+
+#define BRAM0(A) ((volatile u32*)px_config0->MemBaseAddress)[A]
+#define BRAM1(A) ((volatile u32*)px_config1->MemBaseAddress)[A]
+
+XBram x_bram0;
+XBram_Config *px_config0;
+
+XBram x_bram1;
+XBram_Config *px_config1;
+
+XKalmanfilterkernel kf_kernel;
+XKalmanfilterkernel_Config *kf_config;
 
 KFNode::KFNode(const std::string & node_name, const std::string & node_namespace) : rclcpp::Node(node_name, node_namespace) {
 
   // Custom code here to initialize BRAM and xkalmanfilterkernel
+  init_platform();
+
+  px_config0 = XBram_LookupConfig(XPAR_BRAM_0_DEVICE_ID);
+  int x_status = XBram_CfgInitialize(&x_bram0, px_config0, px_config0->CtrlBaseAddress);
+
+  px_config1 = XBram_LookupConfig(XPAR_BRAM_1_DEVICE_ID);
+	x_status = XBram_CfgInitialize(&x_bram1, px_config1, px_config1->CtrlBaseAddress);
+
+	kf_config = XKalmanfilterkernel_LookupConfig(XPAR_KALMANFILTERKERNEL_0_DEVICE_ID);
+	x_status = XKalmanfilterkernel_CfgInitialize(&kf_kernel, kf_config);
+	x_status = XKalmanfilterkernel_Initialize(&kf_kernel, XPAR_KALMANFILTERKERNEL_0_DEVICE_ID);
+
+	XKalmanfilterkernel_Initialize(&kf_kernel, "KalmanFilterKernel");
   // ...
 
   // Initialize subscribers
@@ -24,6 +51,8 @@ KFNode::KFNode(const std::string & node_name, const std::string & node_namespace
 
 KFNode::~KFNode() {
   // Custom code here to close BRAM and xkalmanfilterkernel
+  cleanup_platform();
+  XKalmanfilterkernel_Release(&kf_kernel);
   // ...
 }
 
