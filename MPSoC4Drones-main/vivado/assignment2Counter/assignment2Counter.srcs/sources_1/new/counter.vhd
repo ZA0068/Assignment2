@@ -35,42 +35,26 @@ use IEEE.NUMERIC_STD.ALL;
 entity counter is
     Port ( clk : in STD_LOGIC;
            rst : in STD_LOGIC;
-           divider : in UNSIGNED (31 downto 0);
-           counter_out : out STD_LOGIC_VECTOR (31 downto 0);
-           clk_out : out STD_LOGIC;
+           counter_out : out STD_LOGIC_VECTOR (24 downto 0);
            active : out STD_LOGIC);
 end counter;
 
 architecture Behavioral of counter is
 
-signal sign_counter :   UNSIGNED(31 downto 0) := (OTHERS =>'0');
-signal sign_clk_out :   STD_LOGIC := '0';
+signal sign_counter :   UNSIGNED(24 downto 0) := (OTHERS =>'0');
 signal sign_active :   STD_LOGIC := '0';
 begin
 mainProcess: process(clk,rst)
 begin
     if (rst='1') then
         sign_counter <= (OTHERS =>'0');
-        sign_clk_out <= '0';
         sign_active <= '0';
-    else
-        if (rising_edge(clk)) or (falling_edge(clk)) then
-            sign_counter <= sign_counter + 1;
-        end if ;
-        if (sign_active = '1') then
-            if (sign_counter+1 >= divider/2) then
-                sign_clk_out <= NOT sign_clk_out;
-                sign_counter <= (OTHERS =>'0');
-            end if ;
-        else
-            if (rising_edge(clk)) then
-                sign_clk_out <= NOT sign_clk_out;
-                sign_counter <= sign_counter + 1;
-                sign_active <= '1';
-            end if;
-        end if ;
-    end if ;
-    clk_out <= sign_clk_out;
+    elsif(rising_edge(clk)) then
+        if(sign_active =  '0') then
+            sign_active <= '1';
+        end if;
+        sign_counter <= sign_counter + 1;
+    end if;
     counter_out <= STD_LOGIC_VECTOR(sign_counter);
     active <= sign_active;
 end process ; -- mainProcess
