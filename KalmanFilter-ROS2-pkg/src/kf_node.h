@@ -41,13 +41,21 @@ private:
   void control_input_callback(const std_msgs::msg::Float32MultiArray::SharedPtr msg);
 
   // Publish estimated position
-  void publish_pos_est(pos_t pos_est);
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+  void publish_pos_est(pos_t pos_est); original
+  //void publish_pos_est(geometry_msgs::msg::PoseStamped pos_est); //is this what is to be done? probably not
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 
   queue<pos_t> pos_meas_queue;
   queue<acc_t> control_input_queue;
 
   // Add here BRAM and xkalmanfilterkernel objects
+  BRAM bram1; //to be updated
+  BRAM bram2; //to be updated
 
+  XKalmanfilterkernel kf_kernel;
+  XKalmanfilterkernel_Config *kf_config;
+  // ...
 };
 
 int main(int argc, char ** argv);

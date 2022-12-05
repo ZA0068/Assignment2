@@ -1,35 +1,9 @@
 #include "kf_node.h"
-#include "xbram.h"
-#include "xkalmanfilterkernel.h"
 
-#define BRAM0(A) ((volatile u32*)px_config0->MemBaseAddress)[A]
-#define BRAM1(A) ((volatile u32*)px_config1->MemBaseAddress)[A]
-
-XBram x_bram0;
-XBram_Config *px_config0;
-
-XBram x_bram1;
-XBram_Config *px_config1;
-
-XKalmanfilterkernel kf_kernel;
-XKalmanfilterkernel_Config *kf_config;
-
-KFNode::KFNode(const std::string & node_name, const std::string & node_namespace) : rclcpp::Node(node_name, node_namespace) {
+KFNode::KFNode(const std::string & node_name, const std::string & node_namespace) : rclcpp::Node(node_name, node_namespace), bram1(1, 400), bram2(2,400) {
 
   // Custom code here to initialize BRAM and xkalmanfilterkernel
-  init_platform();
-
-  px_config0 = XBram_LookupConfig(XPAR_BRAM_0_DEVICE_ID);
-  int x_status = XBram_CfgInitialize(&x_bram0, px_config0, px_config0->CtrlBaseAddress);
-
-  px_config1 = XBram_LookupConfig(XPAR_BRAM_1_DEVICE_ID);
-	x_status = XBram_CfgInitialize(&x_bram1, px_config1, px_config1->CtrlBaseAddress);
-
-	kf_config = XKalmanfilterkernel_LookupConfig(XPAR_KALMANFILTERKERNEL_0_DEVICE_ID);
-	x_status = XKalmanfilterkernel_CfgInitialize(&kf_kernel, kf_config);
-	x_status = XKalmanfilterkernel_Initialize(&kf_kernel, XPAR_KALMANFILTERKERNEL_0_DEVICE_ID);
-
-	XKalmanfilterkernel_Initialize(&kf_kernel, "KalmanFilterKernel");
+	XKalmanfilterkernel_Initialize(&kf_kernel, device_id); //to be updated
   // ...
 
   // Initialize subscribers
@@ -51,7 +25,6 @@ KFNode::KFNode(const std::string & node_name, const std::string & node_namespace
 
 KFNode::~KFNode() {
   // Custom code here to close BRAM and xkalmanfilterkernel
-  cleanup_platform();
   XKalmanfilterkernel_Release(&kf_kernel);
   // ...
 }
@@ -64,6 +37,16 @@ void KFNode::pos_meas_callback(const std_msgs::msg::Float32MultiArray::SharedPtr
   pos_meas_queue.push(pos_meas);
 
   // Custom code here to possibly call Kalman filter if both queues are not empty
+
+  if (!control_input_queue.empty() && XKalmanfilterkernel_IsDone(&kf_kernel)){
+
+    uint32_t *datain = bram1.GetPointer();
+    datain[0] = pos_meas_queue[0];
+    datain[1] = pos_meas_queue[1];
+    datain[2] = pos_meas_queue[2];
+
+    XKalmanfilterkernel_Start(&kf_kernel);
+  }
   // ...
 
 }
@@ -76,6 +59,15 @@ void KFNode::control_input_callback(const std_msgs::msg::Float32MultiArray::Shar
   control_input_queue.push(control_input);
 
   // Custom code here to possibly call Kalman filter if both queues are not empty
+  if (!pos_meas_queue.empty() && XKalmanfilterkernel_IsDone(&kf_kernel)){
+
+    uint32_t *datain = bram1.GetPointer();
+    datain[3] = control_input_queue[0];
+    datain[4] = control_input_queue[1];
+    datain[5] = control_input_queue[2];
+
+    XKalmanfilterkernel_Start(&kf_kernel);
+  }
   // ...
 
 }
@@ -88,6 +80,12 @@ void KFNode::publish_pos_est(pos_t pos_est) {
   pos_est_msg.pose.orientation.x = 0.;
   pos_est_msg.pose.orientation.y = 0.;
   pos_est_msg.pose.orientation.z = 0.;
+
+  uint32_t *dataout = bram2.GetPointer();
+  pos_est.x = dataout[0] 
+  pos_est.y = dataout[1] 
+  pos_est.z = dataout[2] 
+
   pos_est_msg.pose.position.x = pos_est.x;
   pos_est_msg.pose.position.y = pos_est.y;
   pos_est_msg.pose.position.z = pos_est.z;
